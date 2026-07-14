@@ -413,12 +413,12 @@ class Validator:
             if ref not in self.ref_rules:
                 self.err("does not match the name of a ref rule")
 
-    def validate_rule_tags(self, tags: dict[str, int]):
+    def validate_rule_tags(self, tags: dict[str, TagLevel]):
         with self.key("tags"):
             for tag_name, tag_level in tags.items():
                 self.validate_rule_tag(tag_name, tag_level)
 
-    def validate_rule_tag(self, name: str, level: int):
+    def validate_rule_tag(self, name: str, level: TagLevel):
         with self.key(name):
             # CHECK: name matches a tag
             if name not in self.tags:
