@@ -9,7 +9,7 @@ from .options import PseudoregaliaOptions
 from rule_builder.rules import Rule, And, Or, Has, HasAll, HasAllCounts, CanReachRegion, True_, False_
 from typing_extensions import override
 from dataclasses import dataclass
-from .logic import OptionData, RuleData, PseudoregaliaData
+from .logic import OptionData, RuleData, PseudoregaliaData, TagLevel
 
 if TYPE_CHECKING:
     from . import PseudoregaliaWorld
@@ -181,13 +181,30 @@ def check_tags(player_tags: dict[str, int], tags: dict[str, int] | None) -> bool
 def check_options(player_options: PseudoregaliaOptions, options: OptionData | None) -> bool:
     return options is None or all(getattr(player_options, op_name) == value for op_name, value in options.items())
 
+def convert_tags(tags: dict[str, TagLevel] | None) -> dict[str, int] | None:
+    """Converts tags from yaml format with level literals to the int format that the world will use."""
+    if tags is None:
+        return None
+
+    converted_tags: dict[str, int] = {}
+    for tag, level in tags.items():
+        if level == "advanced":
+            converted_tags[tag] = 1
+        elif level == "hard":
+            converted_tags[tag] = 2
+        elif level == "expert":
+            converted_tags[tag] = 3
+        elif level == "lunatic":
+            converted_tags[tag] = 4
+    return converted_tags
+
 class PseudoregaliaRule(Rule[PseudoregaliaWorld], game="Pseudoregalia"):
     rule: Rule
     tags: dict[str, int] | None
     option_data: OptionData | None
 
     def __init__(self, rule_data: RuleData, ref_rules: dict[str, "PseudoregaliaRule"]):
-        self.tags = rule_data.tags
+        self.tags = convert_tags(rule_data.tags)
         self.option_data = rule_data.options
 
         if rule_data.and_ is not None:

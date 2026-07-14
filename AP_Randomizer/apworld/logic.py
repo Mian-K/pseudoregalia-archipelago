@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import TypeAlias
+from typing import Literal, TypeAlias
 
 @dataclass
 class PseudoregaliaData:
@@ -140,10 +140,12 @@ class RuleData:
     """Maps to the CanReachRegion RuleBuilder object."""
     ref: str | None
     """Maps to a ref_rule by name."""
-    tags: dict[str, int] | None
+    tags: dict[str, TagLevel] | None
     """Provides filtering. The keys are required tags and the values are the minimum logic level for the tag."""
     options: OptionData | None
     """Provides additional filtering based on other options."""
+
+TagLevel: TypeAlias = Literal["advanced", "hard", "expert", "lunatic"]
 
 @dataclass
 class ExitData:
